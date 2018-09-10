@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--suppress ALL -->
+<mapper namespace="org.hyj.dao.NoteMapper">
+    <resultMap id="BaseResultMap" type="org.hyj.bean.Note">
+        <id column="note_id" jdbcType="INTEGER" property="noteId"/>
+        <association property="user" javaType="User">
+            <id column="user_id" jdbcType="INTEGER" property="userId"/>
+            <result column="user_name" jdbcType="CHAR" property="userName"/>
+            <result column="user_password" jdbcType="CHAR" property="userPassword"/>
+        </association>
+        <association property="word" javaType="Word">
+            <id column="word_Id" property="wordId"/>
+            <result column="word_name" property="wordName"/>
+            <result column="word_pron" property="wordPron"/>
+            <result column="word_source_link" property="wordSourceLink"/>
+        </association>
+
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="org.hyj.bean.Note">
+        <result column="note_text" jdbcType="LONGVARCHAR" property="noteText"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        note_id, word_id, user_id
+    </sql>
+    <sql id="Blob_Column_List">
+        note_text
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from note
+        where note_id = #{noteId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        DELETE FROM note
+        WHERE note_id = #{noteId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="org.hyj.bean.Note">
+        INSERT INTO note (note_id, word_id, user_id,
+                          note_text)
+        VALUES (#{noteId,jdbcType=INTEGER}, #{word.wordId,jdbcType=INTEGER}, #{user.userId,jdbcType=INTEGER},
+                #{noteText,jdbcType=LONGVARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="org.hyj.bean.Note">
+        insert into note
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="noteId != null">
+                note_id,
+            </if>
+            <if test="wordId != null">
+                word_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="noteText != null">
+                note_text,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="noteId != null">
+                #{noteId,jdbcType=INTEGER},
+            </if>
+            <if test="wordId != null">
+                #{word.wordId,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{user.userId,jdbcType=INTEGER},
+            </if>
+            <if test="noteText != null">
+                #{noteText,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="org.hyj.bean.Note">
+        update note
+        <set>
+            <if test="wordId != null">
+                word_id = #{word.wordId,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                user_id = #{user.userId,jdbcType=INTEGER},
+            </if>
+            <if test="noteText != null">
+                note_text = #{noteText,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where note_id = #{noteId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="org.hyj.bean.Note">
+        UPDATE note
+        SET word_id   = #{word.wordId,jdbcType=INTEGER},
+            user_id   = #{user.userId,jdbcType=INTEGER},
+            note_text = #{noteText,jdbcType=LONGVARCHAR}
+        WHERE note_id = #{noteId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="org.hyj.bean.Note">
+        UPDATE note
+        SET word_id = #{word.wordId,jdbcType=INTEGER},
+            user_id = #{user.userId,jdbcType=INTEGER}
+        WHERE note_id = #{noteId,jdbcType=INTEGER}
+    </update>
+    <select id="selectNoteByUserIdAndWordId" resultMap="ResultMapWithBLOBs">
+        SELECT note_text
+        FROM note, word, user
+        WHERE note.user_id = user.user_id
+              AND note.word_id = word.word_id
+              AND user.user_id = #{userId}
+              AND note.word_id = #{wordId};
+    </select>
+    <update id="updateNoteByWordId">
+        UPDATE note
+        SET note_text = #{noteText}
+        WHERE word_id = #{wordId}
+              AND note.user_id = #{userId};
+    </update>
+</mapper>

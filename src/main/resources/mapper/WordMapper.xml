@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.hyj.dao.WordMapper">
+    <resultMap id="BaseResultMap" type="org.hyj.bean.Word">
+        <id column="word_Id" jdbcType="INTEGER" property="wordId"/>
+        <result column="word_name" jdbcType="CHAR" property="wordName"/>
+        <result column="word_pron" jdbcType="CHAR" property="wordPron"/>
+        <result column="word_source_link" jdbcType="CHAR" property="wordSourceLink"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="org.hyj.bean.WordWithBLOBs">
+        <result column="word_simple_meaning" jdbcType="LONGVARCHAR" property="wordSimpleMeaning"/>
+        <result column="word_shit" jdbcType="LONGVARCHAR" property="wordShit"/>
+        <result column="word_double_meaning" jdbcType="LONGVARCHAR" property="wordDoubleMeaning"/>
+        <result column="word_en_meaning" jdbcType="LONGVARCHAR" property="wordEnMeaning"/>
+        <result column="word_words" jdbcType="LONGVARCHAR" property="wordWords"/>
+        <result column="word_syno" jdbcType="LONGVARCHAR" property="wordSyno"/>
+        <result column="word_anto" jdbcType="LONGVARCHAR" property="wordAnto"/>
+        <result column="word_deri" jdbcType="LONGVARCHAR" property="wordDeri"/>
+        <result column="word_similar" jdbcType="LONGVARCHAR" property="wordSimilar"/>
+        <result column="word_detail" jdbcType="LONGVARCHAR" property="wordDetail"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        word_Id, word_name, word_pron, word_source_link
+    </sql>
+    <sql id="Blob_Column_List">
+        word_simple_meaning, word_shit, word_double_meaning, word_en_meaning, word_words,
+        word_syno, word_anto, word_deri, word_similar, word_detail
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from word
+        where word_Id = #{wordId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        DELETE FROM word
+        WHERE word_Id = #{wordId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="org.hyj.bean.WordWithBLOBs">
+        INSERT INTO word (word_Id, word_name, word_pron,
+                          word_source_link, word_simple_meaning, word_shit,
+                          word_double_meaning, word_en_meaning,
+                          word_words, word_syno, word_anto,
+                          word_deri, word_similar, word_detail
+        )
+        VALUES (#{wordId,jdbcType=INTEGER}, #{wordName,jdbcType=CHAR}, #{wordPron,jdbcType=CHAR},
+                                            #{wordSourceLink,jdbcType=CHAR}, #{wordSimpleMeaning,jdbcType=LONGVARCHAR},
+                                            #{wordShit,jdbcType=LONGVARCHAR},
+                                            #{wordDoubleMeaning,jdbcType=LONGVARCHAR},
+                                            #{wordEnMeaning,jdbcType=LONGVARCHAR},
+                                            #{wordWords,jdbcType=LONGVARCHAR}, #{wordSyno,jdbcType=LONGVARCHAR},
+                                            #{wordAnto,jdbcType=LONGVARCHAR},
+                #{wordDeri,jdbcType=LONGVARCHAR}, #{wordSimilar,jdbcType=LONGVARCHAR},
+                #{wordDetail,jdbcType=LONGVARCHAR}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="org.hyj.bean.WordWithBLOBs">
+        insert into word
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="wordId != null">
+                word_Id,
+            </if>
+            <if test="wordName != null">
+                word_name,
+            </if>
+            <if test="wordPron != null">
+                word_pron,
+            </if>
+            <if test="wordSourceLink != null">
+                word_source_link,
+            </if>
+            <if test="wordSimpleMeaning != null">
+                word_simple_meaning,
+            </if>
+            <if test="wordShit != null">
+                word_shit,
+            </if>
+            <if test="wordDoubleMeaning != null">
+                word_double_meaning,
+            </if>
+            <if test="wordEnMeaning != null">
+                word_en_meaning,
+            </if>
+            <if test="wordWords != null">
+                word_words,
+            </if>
+            <if test="wordSyno != null">
+                word_syno,
+            </if>
+            <if test="wordAnto != null">
+                word_anto,
+            </if>
+            <if test="wordDeri != null">
+                word_deri,
+            </if>
+            <if test="wordSimilar != null">
+                word_similar,
+            </if>
+            <if test="wordDetail != null">
+                word_detail,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="wordId != null">
+                #{wordId,jdbcType=INTEGER},
+            </if>
+            <if test="wordName != null">
+                #{wordName,jdbcType=CHAR},
+            </if>
+            <if test="wordPron != null">
+                #{wordPron,jdbcType=CHAR},
+            </if>
+            <if test="wordSourceLink != null">
+                #{wordSourceLink,jdbcType=CHAR},
+            </if>
+            <if test="wordSimpleMeaning != null">
+                #{wordSimpleMeaning,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordShit != null">
+                #{wordShit,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordDoubleMeaning != null">
+                #{wordDoubleMeaning,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordEnMeaning != null">
+                #{wordEnMeaning,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordWords != null">
+                #{wordWords,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordSyno != null">
+                #{wordSyno,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordAnto != null">
+                #{wordAnto,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordDeri != null">
+                #{wordDeri,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordSimilar != null">
+                #{wordSimilar,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordDetail != null">
+                #{wordDetail,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="org.hyj.bean.WordWithBLOBs">
+        update word
+        <set>
+            <if test="wordName != null">
+                word_name = #{wordName,jdbcType=CHAR},
+            </if>
+            <if test="wordPron != null">
+                word_pron = #{wordPron,jdbcType=CHAR},
+            </if>
+            <if test="wordSourceLink != null">
+                word_source_link = #{wordSourceLink,jdbcType=CHAR},
+            </if>
+            <if test="wordSimpleMeaning != null">
+                word_simple_meaning = #{wordSimpleMeaning,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordShit != null">
+                word_shit = #{wordShit,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordDoubleMeaning != null">
+                word_double_meaning = #{wordDoubleMeaning,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordEnMeaning != null">
+                word_en_meaning = #{wordEnMeaning,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordWords != null">
+                word_words = #{wordWords,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordSyno != null">
+                word_syno = #{wordSyno,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordAnto != null">
+                word_anto = #{wordAnto,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordDeri != null">
+                word_deri = #{wordDeri,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordSimilar != null">
+                word_similar = #{wordSimilar,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="wordDetail != null">
+                word_detail = #{wordDetail,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where word_Id = #{wordId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="org.hyj.bean.WordWithBLOBs">
+        UPDATE word
+        SET word_name           = #{wordName,jdbcType=CHAR},
+            word_pron           = #{wordPron,jdbcType=CHAR},
+            word_source_link    = #{wordSourceLink,jdbcType=CHAR},
+            word_simple_meaning = #{wordSimpleMeaning,jdbcType=LONGVARCHAR},
+            word_shit           = #{wordShit,jdbcType=LONGVARCHAR},
+            word_double_meaning = #{wordDoubleMeaning,jdbcType=LONGVARCHAR},
+            word_en_meaning     = #{wordEnMeaning,jdbcType=LONGVARCHAR},
+            word_words          = #{wordWords,jdbcType=LONGVARCHAR},
+            word_syno           = #{wordSyno,jdbcType=LONGVARCHAR},
+            word_anto           = #{wordAnto,jdbcType=LONGVARCHAR},
+            word_deri           = #{wordDeri,jdbcType=LONGVARCHAR},
+            word_similar        = #{wordSimilar,jdbcType=LONGVARCHAR},
+            word_detail         = #{wordDetail,jdbcType=LONGVARCHAR}
+        WHERE word_Id = #{wordId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="org.hyj.bean.Word">
+        UPDATE word
+        SET word_name        = #{wordName,jdbcType=CHAR},
+            word_pron        = #{wordPron,jdbcType=CHAR},
+            word_source_link = #{wordSourceLink,jdbcType=CHAR}
+        WHERE word_Id = #{wordId,jdbcType=INTEGER}
+    </update>
+    <select id="selectWordByName" resultMap="ResultMapWithBLOBs">
+        SELECT *
+        FROM word
+        WHERE word_name = #{WordName}
+    </select>
+
+    <select id="selectLikeWordByName" resultMap="ResultMapWithBLOBs">
+        SELECT *
+        FROM word
+        WHERE word_name LIKE concat(concat('%', #{wordName}), '%')
+        <if test="page != null">
+            LIMIT #{page},10
+        </if>
+        <if test="page == null">
+            LIMIT 0,10
+        </if>
+    </select>
+
+
+    <select id="selectLikeWordsByName" resultMap="ResultMapWithBLOBs">
+        SELECT *
+        FROM word
+        WHERE word_words LIKE concat(concat('%', #{wordsName}), '%')
+        <if test="page != null">
+            LIMIT #{page},10
+        </if>
+        <if test="page == null">
+            LIMIT 0,10
+        </if>
+    </select>
+    <select id="selectWordKey" resultMap="BaseResultMap">
+        SELECT word_id,word_name,word_pron,word.word_source_link
+        FROM word
+        WHERE word_name LIKE concat(concat(#{wordsName}), '%')
+        LIMIT 0,10
+    </select>
+    <select id="selectErrorWord">
+        select  * from word
+where word.word.word_simple_meaning='[]'
+and  word.word.word_pron is NULL
+    </select>
+</mapper>

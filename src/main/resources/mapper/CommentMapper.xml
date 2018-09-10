@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.hyj.dao.CommentMapper">
+    <resultMap id="BaseResultMap" type="org.hyj.bean.Comment">
+        <id column="comment_id" jdbcType="INTEGER" property="commentId"/>
+        <result column="comment_date" jdbcType="TIMESTAMP" property="commentDate"/>
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" extends="BaseResultMap" type="org.hyj.bean.Comment">
+        <result column="comment_text" jdbcType="LONGVARCHAR" property="commentText"/>
+        <association property="user" javaType="User">
+            <id column="user_id" jdbcType="INTEGER" property="userId"/>
+            <result column="user_name" jdbcType="CHAR" property="userName"/>
+            <result column="user_password" jdbcType="CHAR" property="userPassword"/>
+        </association>
+        <association property="word" javaType="Word">
+            <id column="word_Id" property="wordId"/>
+            <result column="word_name" property="wordName"/>
+            <result column="word_pron" property="wordPron"/>
+            <result column="word_source_link" property="wordSourceLink"/>
+        </association>
+    </resultMap>
+    <sql id="Base_Column_List">
+        comment_id, comment_date, word_id, user_id
+    </sql>
+    <sql id="Blob_Column_List">
+        comment_text
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from comment
+        where comment_id = #{commentId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        DELETE FROM comment
+        WHERE comment_id = #{commentId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="org.hyj.bean.Comment">
+        INSERT INTO comment (comment_id, comment_date, word_id,
+                             user_id, comment_text)
+        VALUES (#{commentId,jdbcType=INTEGER}, #{commentDate,jdbcType=TIMESTAMP}, #{word.wordId,jdbcType=INTEGER},
+                #{user.userId,jdbcType=INTEGER}, #{commentText,jdbcType=LONGVARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="org.hyj.bean.Comment">
+        insert into comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="commentId != null">
+                comment_id,
+            </if>
+            <if test="commentDate != null">
+                comment_date,
+            </if>
+            <if test="word != null">
+                word_id,
+            </if>
+            <if test="user != null">
+                user_id,
+            </if>
+            <if test="commentText != null">
+                comment_text,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="commentId != null">
+                #{commentId,jdbcType=INTEGER},
+            </if>
+            <if test="commentDate != null">
+                #{commentDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="word != null">
+                #{word.wordId,jdbcType=INTEGER},
+            </if>
+            <if test="user != null">
+                #{user.userId,jdbcType=INTEGER},
+            </if>
+            <if test="commentText != null">
+                #{commentText,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="org.hyj.bean.Comment">
+        update comment
+        <set>
+            <if test="commentDate != null">
+                comment_date = #{commentDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="word != null">
+                word_id = #{word.wordId,jdbcType=INTEGER},
+            </if>
+            <if test="user != null">
+                user_id = #{user.userId,jdbcType=INTEGER},
+            </if>
+            <if test="commentText != null">
+                comment_text = #{commentText,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where comment_id = #{commentId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="org.hyj.bean.Comment">
+        UPDATE comment
+        SET comment_date = #{commentDate,jdbcType=TIMESTAMP},
+            word_id      = #{word.wordId,jdbcType=INTEGER},
+            user_id      = #{user.userId,jdbcType=INTEGER},
+            comment_text = #{commentText,jdbcType=LONGVARCHAR}
+        WHERE comment_id = #{commentId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="org.hyj.bean.Comment">
+        UPDATE comment
+        SET comment_date = #{commentDate,jdbcType=TIMESTAMP},
+            word_id      = #{word.wordId,jdbcType=INTEGER},
+            user_id      = #{user.userId,jdbcType=INTEGER}
+        WHERE comment_id = #{commentId,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectCommentByWordId" resultMap="ResultMapWithBLOBs">
+        SELECT
+        *
+        FROM comment, word, user
+        WHERE comment.word_id = word.word_Id
+        AND comment.user_id = user.user_id
+        AND word.word_Id = #{wordId}
+        ORDER BY comment_date DESC
+        <if test="page != null">
+            LIMIT #{page},10
+        </if>
+        <if test="page == null">
+            LIMIT 0,10
+        </if>
+    </select>
+    <select id="selectCommentByUserId" resultMap="ResultMapWithBLOBs">
+        SELECT * FROM comment
+        WHERE comment.user_id=#{userId}
+        ORDER BY comment_date DESC
+        <if test="page != null">
+            LIMIT #{page},10
+        </if>
+        <if test="page == null">
+            LIMIT 0,10
+        </if>
+    </select>
+
+    <delete id="deleteCommentByCommentIdAndUserId">
+        DELETE FROM comment
+        WHERE comment_id = #{commentId}
+              AND user_id = #{userId}
+    </delete>
+</mapper>

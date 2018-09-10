@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.hyj.dao.HistoryMapper">
+    <resultMap id="BaseResultMap" type="org.hyj.bean.History">
+        <id column="history_id" jdbcType="INTEGER" property="historyId"/>
+        <result column="history_num" jdbcType="INTEGER" property="historyNum"/>
+        <association property="user" javaType="User">
+            <id column="user_id" jdbcType="INTEGER" property="userId"/>
+            <result column="user_name" jdbcType="CHAR" property="userName"/>
+            <result column="user_password" jdbcType="CHAR" property="userPassword"/>
+        </association>
+        <association property="word" javaType="Word">
+            <id column="word_Id" property="wordId"/>
+            <result column="word_name" property="wordName"/>
+            <result column="word_pron" property="wordPron"/>
+            <result column="word_source_link" property="wordSourceLink"/>
+        </association>
+    </resultMap>
+    <sql id="Base_Column_List">
+        history_id, history_num, word_id, user_id
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from history
+        where history_id = #{historyId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        DELETE FROM history
+        WHERE history_id = #{historyId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="org.hyj.bean.History">
+        INSERT INTO history (history_id, history_num, word_id,
+                             user_id)
+        VALUES (#{historyId,jdbcType=INTEGER}, #{historyNum,jdbcType=INTEGER}, #{word.wordId,jdbcType=INTEGER},
+                #{user.userId,jdbcType=INTEGER})
+    </insert>
+    <insert id="insertSelective" parameterType="org.hyj.bean.History">
+        insert into history
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="historyId != null">
+                history_id,
+            </if>
+            <if test="historyNum != null">
+                history_num,
+            </if>
+            <if test="wordId != null">
+                word_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="historyId != null">
+                #{historyId,jdbcType=INTEGER},
+            </if>
+            <if test="historyNum != null">
+                #{historyNum,jdbcType=INTEGER},
+            </if>
+            <if test="wordId != null">
+                #{word.wordId,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{user.userId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="org.hyj.bean.History">
+        update history
+        <set>
+            <if test="historyNum != null">
+                history_num = #{historyNum,jdbcType=INTEGER},
+            </if>
+            <if test="wordId != null">
+                word_id = #{word.wordId,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                user_id = #{user.userId,jdbcType=INTEGER},
+            </if>
+        </set>
+        where history_id = #{historyId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="org.hyj.bean.History">
+        UPDATE history
+        SET history_num = #{historyNum,jdbcType=INTEGER},
+            word_id     = #{word.wordId,jdbcType=INTEGER},
+            user_id     = #{user.userId,jdbcType=INTEGER}
+        WHERE history_id = #{historyId,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectHistoryByUserId" resultMap="BaseResultMap">
+        SELECT history.* FROM history,user,word
+        WHERE history.user_id=user.user_id
+        AND history.word_id=word.word_Id
+        AND user.user_id=#{userId}
+        ORDER BY history_id DESC
+        <if test="page != null">
+            LIMIT #{page},10
+        </if>
+        <if test="page == null">
+            LIMIT 0,10
+        </if>
+    </select>
+    <delete id="deleteHistoryByUserId">
+        DELETE FROM history
+        WHERE history.user_id = #{userId};
+    </delete>
+
+    <select id="selectHistoryByUserIdAndWordId" resultMap="BaseResultMap">
+        SELECT * FROM history
+        WHERE history.user_id=#{userId}
+        AND history.word_id=#{wordId}
+    </select>
+</mapper>
